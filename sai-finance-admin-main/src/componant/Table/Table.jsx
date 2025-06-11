@@ -59,7 +59,7 @@ const Table = ({
                       <th
                         {...column.getHeaderProps()}
                         key={cIdx}
-                        className="px-2 py-4 font-bold uppercase text-xs text-black sticky top-0 z-10 bg-bgBlue text-center"
+                        className="px-2 py-4 font-bold uppercase text-xs text-white sticky top-0 z-10 bg-	bg-blue text-center"
                       >
                         {
                           // Render the header
@@ -89,7 +89,7 @@ const Table = ({
                     <tr
                       //  onClick={tbleFun}
                       {...rowProps}
-                      className=" border-b border-dashed text-black"
+                      className=" border-b border-dashed "
                     >
                       {
                         // Loop over the rows cells
@@ -99,7 +99,7 @@ const Table = ({
                             <td
                               key={cIdx}
                               {...cell.getCellProps()}
-                              className="px-2 py-2 text-sm text-center max-w-xs break-words text-black"
+                              className="px-2 py-2 text-sm text-center max-w-xs break-words text-green-50"
                             >
                               {
                                 // Render the cell contents
