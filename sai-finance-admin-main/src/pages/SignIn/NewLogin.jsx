@@ -15,7 +15,7 @@ const NewLogin = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post("/Users/adminLogin", { phone, password });
+      const response = await axios.post("/Users/login", { phone, password });
       localStorage.setItem("token", response.data.accessToken);
       if (response.data) {
         window.location.replace("/dash");

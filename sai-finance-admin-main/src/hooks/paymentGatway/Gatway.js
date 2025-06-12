@@ -7,6 +7,7 @@ export const useGatway = () => {
     return data;
   });
 };
+
 //"https://api.learn2ern.com/api/createOrderUPI?id=3&isOffer=1"
 
 // const instance = axios.create({
