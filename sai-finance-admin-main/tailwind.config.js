@@ -66,12 +66,13 @@ module.exports = {
         singC: "#0e0e52",
         walletColor: "#21169B",
         yellowColor: "#FFFFF0",
-        purple1: "#471594",
-        purple: "#FF7900",
+        // purple1: "#471594",
+        // purple: "#FF7900",
         red: "#FF0000",
         bgWhite: "#FDF8EE",
         heroBg: "#4D2C5E03",
-        tagsky: "#1BCBE3"
+        tagsky: "#1BCBE3",
+        light:"#ff6f7d"
       },
     },
   },

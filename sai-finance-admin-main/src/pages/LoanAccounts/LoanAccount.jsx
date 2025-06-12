@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
-import { Link } from "react-router-dom";
 import dayjs from "dayjs";
+import { Link } from "react-router-dom";
 import axios from "../../axios";
 
 import Table from "../../componant/Table/Table";
@@ -35,132 +35,155 @@ import {
 import { MdEdit, MdDelete } from "react-icons/md";
 import { HiStatusOnline } from "react-icons/hi";
 
+// 🆕 import the modal component
+import CreateLoanUser from "./CreateLoanUser"; // ⬅️ adjust the path if needed
+
 function UserManagement() {
   const [data, setData] = useState([]);
   const [selectedUserID, setSelectedUserID] = useState(null);
 
   const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  // delete‐user confirmation dialog
+  const {
+    isOpen: isAlertOpen,
+    onOpen: openAlert,
+    onClose: closeAlert,
+  } = useDisclosure();
+
+  // side drawer for filters
   const {
     isOpen: isDrawerOpen,
     onOpen: openDrawer,
     onClose: closeDrawer,
   } = useDisclosure();
+
+  // modal for creating a user
+  const {
+    isOpen: isCreateOpen,
+    onOpen: openCreate,
+    onClose: closeCreate,
+  } = useDisclosure();
+
   const cancelRef = useRef();
   const btnRef = useRef();
 
+  // 🚀 fetch users once on mount
   useEffect(() => {
-    async function fetchData() {
+    (async () => {
       try {
-        const response = await axios.get("/Users/userDetails");
-        if (response?.data?.result) {
-          setData(response.data.result);
-        }
+        const { data: res } = await axios.get("/Users/userDetails");
+        if (res?.result) setData(res.result);
       } catch (err) {
         console.error("Error fetching user data", err);
       }
-    }
-    fetchData();
+    })();
   }, []);
 
-  const handleDelete = () => {
-    axios
-      .delete(`/Users/userDetails/${selectedUserID}`)
-      .then(() => {
-        toast({
-          title: "User deleted successfully.",
-          status: "success",
-          duration: 4000,
-          isClosable: true,
-          position: "top",
-        });
-        onClose();
-        setData((prev) => prev.filter((user) => user._id !== selectedUserID));
-      })
-      .catch(() => {
-        toast({
-          title: "Something went wrong!",
-          status: "error",
-          duration: 4000,
-          isClosable: true,
-        });
+  // 🔥 remove user handler
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`/Users/userDetails/${selectedUserID}`);
+      toast({
+        title: "User deleted successfully.",
+        status: "success",
+        duration: 4000,
+        isClosable: true,
+        position: "top",
       });
+      closeAlert();
+      setData((prev) => prev.filter((u) => u._id !== selectedUserID));
+    } catch (err) {
+      toast({
+        title: "Something went wrong!",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+        position: "top",
+      });
+    }
   };
 
-  const columns = useMemo(() => [
-    {
-      Header: "Sr No.",
-      accessor: "srNo",
-      Cell: ({ row: { index } }) => <Cell text={index + 1} />,
-    },
-    {
-      Header: "Name",
-      accessor: "name",
-      Cell: ({ value }) => <Cell text={value} bold="bold" />,
-    },
-    {
-      Header: "Email",
-      accessor: "email",
-      Cell: ({ value }) => <Cell text={value} bold="bold" />,
-    },
-    {
-      Header: "Phone",
-      accessor: "phone",
-      Cell: ({ value }) => <Cell text={value} />,
-    },
-    {
-      Header: "Address",
-      accessor: "address",
-      Cell: ({ value }) => <Cell text={value} />,
-    },
-    {
-      Header: "Role",
-      accessor: "role",
-      Cell: ({ value }) => <Cell text={value} />,
-    },
-    {
-      Header: "Status",
-      accessor: "isActive",
-      Cell: ({ value }) => (
-        <Cell text={value ? "Active" : "Inactive"} />
-      ),
-    },
-    {
-      Header: "Registered On",
-      accessor: "createdAt",
-      Cell: ({ value }) => (
-        <Cell text={dayjs(value).format("D MMM, YYYY h:mm A")} />
-      ),
-    },
-    {
-      Header: "Action",
-      Cell: ({ row: { original } }) => (
-        <Menu>
-          <MenuButton as={Button} onClick={() => setSelectedUserID(original._id)}>
-            Actions
-          </MenuButton>
-          <MenuList>
-            <Link to={`/dash/view-user-details/${original._id}`}>
-              <MenuItem>
-                <HiStatusOnline className="mr-4" /> View Details
+  // 📊 table column definitions (memoized)
+  const columns = useMemo(
+    () => [
+      {
+        Header: "Sr No.",
+        accessor: "srNo",
+        Cell: ({ row: { index } }) => <Cell text={index + 1} />,
+      },
+      {
+        Header: "Name",
+        accessor: "name",
+        Cell: ({ value }) => <Cell text={value} bold="bold" />,
+      },
+      {
+        Header: "Email",
+        accessor: "email",
+        Cell: ({ value }) => <Cell text={value} bold="bold" />,
+      },
+      {
+        Header: "Phone",
+        accessor: "phone",
+        Cell: ({ value }) => <Cell text={value} />,
+      },
+      {
+        Header: "Address",
+        accessor: "address",
+        Cell: ({ value }) => <Cell text={value} />,
+      },
+      {
+        Header: "Role",
+        accessor: "role",
+        Cell: ({ value }) => <Cell text={value} />,
+      },
+      {
+        Header: "Status",
+        accessor: "isActive",
+        Cell: ({ value }) => <Cell text={value ? "Active" : "Inactive"} />,
+      },
+      {
+        Header: "Registered On",
+        accessor: "createdAt",
+        Cell: ({ value }) => (
+          <Cell text={dayjs(value).format("D MMM, YYYY h:mm A")} />
+        ),
+      },
+      {
+        Header: "Action",
+        Cell: ({ row: { original } }) => (
+          <Menu>
+            <MenuButton
+              as={Button}
+              onClick={() => setSelectedUserID(original._id)}
+            >
+              Actions
+            </MenuButton>
+            <MenuList>
+              <Link to={`/dash/view-user-details/${original._id}`}>
+                <MenuItem>
+                  <HiStatusOnline className="mr-4" /> View Details
+                </MenuItem>
+              </Link>
+              <Link to={`/dash/edit-user/${original._id}`}>
+                <MenuItem>
+                  <MdEdit className="mr-4" /> Edit
+                </MenuItem>
+              </Link>
+              <MenuItem onClick={openAlert}>
+                <MdDelete className="mr-4" /> Delete
               </MenuItem>
-            </Link>
-            <Link to={`/dash/edit-user/${original._id}`}>
-              <MenuItem>
-                <MdEdit className="mr-4" /> Edit
-              </MenuItem>
-            </Link>
-            <MenuItem onClick={onOpen}>
-              <MdDelete className="mr-4" /> Delete
-            </MenuItem>
-          </MenuList>
-        </Menu>
-      ),
-    },
-  ], [data]);
+            </MenuList>
+          </Menu>
+        ),
+      },
+    ],
+    []
+  );
 
   return (
     <div className="py-8 bg-bgWhite">
+      {/* ========================= HEADER & SEARCH ========================= */}
       <section className="md:p-1">
         <div className="py-6">
           <div className="flex justify-between items-center">
@@ -168,13 +191,16 @@ function UserManagement() {
               <Button onClick={openDrawer} ref={btnRef} className="bg-purple">
                 Total Users: {data.length}
               </Button>
-              <Link to={`/dash/create-user`}>
-                <Button className="bg-purple" colorScheme="orange">
-                  Add New User
-                </Button>
-              </Link>
+              {/* 🆕 open create-user modal */}
+              <Button
+                // className="bg-purple"
+                colorScheme="purple"
+                onClick={openCreate}
+              >
+                Add New User
+              </Button>
             </div>
-
+            {/* 🔍 search bar (not wired) */}
             <div className="w-96">
               <InputGroup size="sm">
                 <InputLeftElement pointerEvents="none" />
@@ -188,13 +214,20 @@ function UserManagement() {
             </div>
           </div>
 
+          {/* ========================= DATA TABLE ========================= */}
           <div className="mt-4">
             <Table data={data} columns={columns} />
           </div>
         </div>
       </section>
 
-      <Drawer isOpen={isDrawerOpen} placement="right" onClose={closeDrawer} finalFocusRef={btnRef}>
+      {/* ========================= FILTER DRAWER ========================= */}
+      <Drawer
+        isOpen={isDrawerOpen}
+        placement="right"
+        onClose={closeDrawer}
+        finalFocusRef={btnRef}
+      >
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
@@ -203,24 +236,43 @@ function UserManagement() {
             <Input placeholder="Type here..." />
           </DrawerBody>
           <DrawerFooter>
-            <Button variant="outline" mr={3} onClick={closeDrawer}>Cancel</Button>
+            <Button variant="outline" mr={3} onClick={closeDrawer}>
+              Cancel
+            </Button>
             <Button colorScheme="blue">Save</Button>
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
 
-      <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose} isCentered>
+      {/* ========================= DELETE ALERT ========================= */}
+      <AlertDialog
+        isOpen={isAlertOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={closeAlert}
+        isCentered
+      >
         <AlertDialogOverlay>
           <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">Delete User</AlertDialogHeader>
-            <AlertDialogBody>Are you sure you want to delete this user?</AlertDialogBody>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Delete User
+            </AlertDialogHeader>
+            <AlertDialogBody>
+              Are you sure you want to delete this user?
+            </AlertDialogBody>
             <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onClose}>Cancel</Button>
-              <Button colorScheme="red" onClick={handleDelete} ml={3}>Delete</Button>
+              <Button ref={cancelRef} onClick={closeAlert}>
+                Cancel
+              </Button>
+              <Button colorScheme="red" onClick={handleDelete} ml={3}>
+                Delete
+              </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
+
+      {/* ========================= CREATE USER MODAL ========================= */}
+      <CreateLoanUser isOpen={isCreateOpen} onClose={closeCreate} />
     </div>
   );
 }

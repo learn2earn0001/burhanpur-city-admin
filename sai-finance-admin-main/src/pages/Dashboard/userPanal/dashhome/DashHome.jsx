@@ -5,6 +5,7 @@ import ChartOne from "../../../../componant/Charts/ChartOne";
 import ChartTwo from "../../../../componant/Charts/ChartTwo";
 import ChartThree from "../../../../componant/Charts/ChartThree";
 import axios from "../../../../axios";
+
 const DashHome = () => {
   const [data, setData] = useState([]);
   const [weekdata, setWeekData] = useState([]);
@@ -22,17 +23,9 @@ const DashHome = () => {
   useEffect(() => {
     async function fetchData() {
       axios.get(`/admins/totalCollectionsToday`).then((response) => {
-        // console.log(response?.data?.result);
         if (response?.data) {
-
           setDailyCollection(response?.data?.result?.totalAmount);
         }
-
-        // const sum = response.data.result.reduce((acc, item) => {
-        //   return acc + (item.amount || 0);
-        // }, 0);
-
-        // setTotalAmount(sum);
       });
     }
     fetchData();
@@ -42,10 +35,8 @@ const DashHome = () => {
   useEffect(() => {
     async function fetchData() {
       axios.get("users/").then((response) => {
-
         if (response?.data) {
           setUserData(response?.data?.result);
-
         }
 
         const sum = response.data.result.reduce((acc, item) => {
@@ -58,127 +49,86 @@ const DashHome = () => {
     fetchData();
   }, []);
 
-
   // total collection
   useEffect(() => {
     async function fetchData() {
       axios.get("/admins/totalCollections").then((response) => {
-        // console.log(response?.data);
         if (response?.data) {
           setTotalCollection(response?.data?.result?.totalAmount);
-
         }
-
-      
       });
     }
     fetchData();
   }, []);
 
-
-
-// Monthely Collections
+  // Monthly Collections
   useEffect(() => {
     async function fetchData() {
-      axios.get("/admins/totalCollectionsMonthly").then((response) => {
-        // console.log(response?.data);
-        if (response?.data) {
-          // setTotalCollection(response?.data?.result?.totalAmount);
-
-        }
-
+      axios.get("/admins/totalCollectionsMonthly").then(() => {
+        // Reserved for future use if needed
       });
     }
     fetchData();
   }, []);
 
-// Monthely Collections Array Formate
+  // Monthly Collections Array Format
   useEffect(() => {
     async function fetchData() {
       axios.get("/admins/totalCollectionsMonthlyStats").then((response) => {
- 
         if (response?.data) {
-
-          setData(response?.data?.result)
-let res=response?.data?.result
-          let months=res.map((e)=>{
-            return e.month
-      
-          })
-          let monthsAmt=res.map((e)=>{
-            return e.totalAmount
-      
-          })
-      
-      
-          setMonthData(months)
-          setMonthlyAmtData(monthsAmt)
+          setData(response?.data?.result);
+          const res = response?.data?.result;
+          const months = res.map((e) => e.month);
+          const monthsAmt = res.map((e) => e.totalAmount);
+          setMonthData(months);
+          setMonthlyAmtData(monthsAmt);
         }
-
       });
     }
     fetchData();
   }, []);
 
-
-// Weekly Collections Array Formate
+  // Weekly Collections Array Format
   useEffect(() => {
     async function fetchData() {
       axios.get("/admins/totalCollectionsWeeklyStats").then((response) => {
-        console.log(response?.data);
         if (response?.data) {
-          // setMonthData(response?.data?.result?.month);
-          // setMonthlyAmtData(response?.data?.result?.totalAmount);
-          setWeekData(response?.data?.result?.dailyStats)
-          let res=response?.data?.result?.dailyStats
-          let weeks=res.map((e)=>{
-            return e.day
-      
-          })
-          let weeksAmt=res.map((e)=>{
-            return e.totalAmount
-      
-          })
-          setweekDays(weeks)
-          setweekAmtData(weeksAmt)
+          setWeekData(response?.data?.result?.dailyStats);
+          const res = response?.data?.result?.dailyStats;
+          const weeks = res.map((e) => e.day);
+          const weeksAmt = res.map((e) => e.totalAmount);
+          setweekDays(weeks);
+          setweekAmtData(weeksAmt);
         }
-
       });
     }
     fetchData();
   }, []);
 
-
-
-
-// Monthely Collections Array Formate
+  // Mirror monthly data when `data` changes
   useEffect(() => {
-    let months=data.map((e)=>{
-      return e.month
-
-    })
-    let monthsAmt=data.map((e)=>{
-      return e.totalAmount
-
-    })
-
-
-    setMonthData(months)
-    setMonthlyAmtData(monthsAmt)
- 
+    const months = data.map((e) => e.month);
+    const monthsAmt = data.map((e) => e.totalAmount);
+    setMonthData(months);
+    setMonthlyAmtData(monthsAmt);
   }, [data]);
-
-
 
   return (
     <div
-      className="lg:py-12 lg:h-full h-screen bg-bgBlue"
-      style={{
-        // backgroundImage: `url('${bgImage}')`,
-        backgroundSize: "cover",
-        
-      }}
+      className="lg:py-12 mt-20  lg:h-full h-screen bg-purple-500"
+      style={{ backgroundSize: "cover" }}
     >
+      {/* Welcome Card */}
+      {/* <div className="p-4">
+        <div className="flex items-center justify-between rounded-2xl bg-white dark:bg-boxdark shadow-lg p-6">
+          <h1 className="text-xl font-semibold text-slate-700 dark:text-white">
+            Hello, Admin
+          </h1>
+          <span className="text-3xl">👋</span>
+        </div>
+      </div> */}
+
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5 p-4">
         <CardDataStats
           title="Daily Collection"
@@ -204,25 +154,14 @@ let res=response?.data?.result
         >
           📦
         </CardDataStats>
-        <CardDataStats
-          title="Total Collections"
-          total={`₹ ${totalCollection}`}
-          // rate="+1.8%"
-          // levelUp
-        >
-          📦
-        </CardDataStats>
+        <CardDataStats title="Total Collections" total={`₹ ${totalCollection}`}>📦</CardDataStats>
       </div>
 
-      <div className=" grid grid-cols-12 gap-4  md:gap-6  2xl:gap-7.5 p-4">
-        <ChartOne monthsData={monthsData} monthlyAmtData={monthlyAmtData}/>
-        <ChartTwo weekDays={weekDays}  weekAmtData={weekAmtData}/>
+      {/* Charts */}
+      <div className="grid grid-cols-12 gap-4 md:gap-6 2xl:gap-7.5 p-4">
+        <ChartOne monthsData={monthsData} monthlyAmtData={monthlyAmtData} />
+        <ChartTwo weekDays={weekDays} weekAmtData={weekAmtData} />
         <ChartThree />
-        {/* <MapOne />
-        <div className="col-span-12 xl:col-span-8">
-          <TableOne />
-        </div>
-        <ChatCard /> */}
       </div>
     </div>
   );
