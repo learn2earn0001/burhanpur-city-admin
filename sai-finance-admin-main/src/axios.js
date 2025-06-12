@@ -3,7 +3,7 @@ import axios from "axios";
 //////////////////////
 //  const API_BASE_URL = "https://learn2earn-alpha.vercel.app/";
 //////////////////////
- const API_BASE_URL = "https://burhanpur-city-backend.vercel.app/api/";
+ const API_BASE_URL = "https://burhanpur-city-backend-mfs4.onrender.com/api";
 
 const instance = axios.create({
   baseURL:API_BASE_URL,

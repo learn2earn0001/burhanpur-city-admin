@@ -4,7 +4,7 @@ import { MdKeyboardArrowDown } from "react-icons/md";
 import { IoMdLogOut } from "react-icons/io";
 import { useUser } from "../../../hooks/use-user";
 import { IoSettings } from "react-icons/io5";
-import Logo from "../../../Images/Sai-finance-logo.png"
+import Logo from '../../../Images/Burhanpur_transparent.png'
 
 const NewNavbar = () => {
   const { data: user } = useUser();
@@ -14,6 +14,7 @@ const NewNavbar = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isMenuOpen2, setIsMenuOpen2] = useState(false);
 
+  //  
   useEffect(() => {
     if (user) {
       setPro(user.profilePicUrl);
@@ -31,8 +32,14 @@ const NewNavbar = () => {
   return (
     <nav className="w-full top-0 flex items-center justify-between bg-white p-4 shadow-lg fixed  z-50">
       {/* Logo */}
-      <div className="text-xl font-bold text-bgBlue  w-16">
-        <img src={Logo} alt="" className="w-full" />
+      <div   className="text-2xl font-bold  text-bgBlue    ">
+        <img style={{
+          // border:'2px solid red ',
+          // marginBottom:'10px',
+          width:'100px',
+          height:'70px',
+        }} src={Logo} alt="" className="w-15" />
+        
       </div>
 
       {/* Menu Items */}
@@ -82,8 +89,9 @@ const NewNavbar = () => {
       <div className="flex items-center gap-2">
         <button
           onClick={() => setIsMenuOpen2(!isMenuOpen2)}
-          className="flex  bg-purple rounded-xl p-1 text-white text-xl font-bold focus:ring-2 focus:ring-bgBlue dark:focus:ring-bgBlue mr-4"
+          className="flex  bg-purple-500 rounded-xl p-1 text-white text-xl font-bold focus:ring-2 focus:ring-bgBlue dark:focus:ring-bgBlue mr-4"
         >
+
           <IoSettings size={28} />
         </button>
       </div>
@@ -97,7 +105,7 @@ const NewNavbar = () => {
       >
         <button
           type="button"
-          className="absolute top-0 right-0 p-2 text-purple hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200 font-semibold"
+          className="absolute top-0 right-0 p-2 text-purple-500 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200 font-semibold"
           onClick={() => setIsMenuOpen2(false)}
         >
           <svg className="w-6 h-6 font-semibold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -107,7 +115,7 @@ const NewNavbar = () => {
 
         <br />
         <div className="w-full flex flex-col justify-center items-center">
-          <div className="flex flex-col gap-2 justify-center items-center text-bgBlue font-oswald">
+          <div className="flex flex-col gap-2 justify-center items-center text-purple-500 font-oswald">
             <div className="w-1/3 m-auto">
               <img src={pro} alt="" className="rounded-full border m-auto" />
             </div>
@@ -117,13 +125,13 @@ const NewNavbar = () => {
               <p className="text-sm">{user?.email}</p>
             </div>
           </div>
-          <div className="w-full flex gap-4 justify-between items-center p-2 text-bgBlue font-oswald">
+          <div className="w-full flex gap-4 justify-between items-center p-2 text-purple-500 font-oswald">
             <div className="ml-4">
               <p className="text-sm text-green font-semibold">Active Course</p>
-              <h1 className="font-bold text-purple">{user?.planName}</h1>
+              <h1 className="font-bold text-purple-500">{user?.planName}</h1>
             </div>
 
-            <div className="mr-4 text-purple">
+            <div className="mr-4 text-purple-500">
               <IoMdLogOut onClick={() => {
                 localStorage.removeItem("token");
                 navigate("/login");
