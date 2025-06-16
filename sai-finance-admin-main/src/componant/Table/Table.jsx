@@ -59,7 +59,9 @@ const Table = ({
                       <th
                         {...column.getHeaderProps()}
                         key={cIdx}
-                        className="px-2 py-4 font-bold uppercase text-xs text-white sticky top-0 z-10 bg-	bg-blue text-center"
+                        className="px-2 py-4 font-bold uppercase text-xs text-white sticky top-0 z-10 bg-blue-400
+                        text-center"
+
                       >
                         {
                           // Render the header

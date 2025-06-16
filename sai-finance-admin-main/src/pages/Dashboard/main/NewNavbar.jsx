@@ -60,8 +60,8 @@ const NewNavbar = () => {
           </Link>
         </li>
         <li>
-          <Link to="/dash/officer" className="hover:text-purple">
-          SubCategory Details
+          <Link to="/dash/buisness" className="hover:text-purple">
+          Buisness
           </Link>
         </li>
 
