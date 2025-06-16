@@ -30,41 +30,109 @@ const CategorySection = () => {
     const [itemsPerPage] = useState(8);
     const toast = useToast();
 
-    const fetchCategories = async () => {
-        try {
-            const res = await axios.get("/category/getCategory");
-            setCategories(res.data?.data || []);
-        } catch (error) {
-            console.error("Error fetching categories:", error.response?.data || error.message);
-        }
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get("/category/getCategory");
+      setCategories(res.data?.data || []);
+    } catch (error) {
+      console.error(
+        "Error fetching categories:",
+        error.response?.data || error.message
+      );
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const openAddModal = () => {
+    setIsEditMode(false);
+    setFormData({ name: "", description: "", image: "" });
+    setModalOpen(true);
+  };
+
+  const openEditModal = (category) => {
+    setIsEditMode(true);
+    setCurrentCategoryId(category._id);
+    setFormData({
+      name: category.name,
+      description: category.description,
+      image: category.image,
+    });
+    setModalOpen(true);
+  };
+
+  const handleAddSubcategory = (categoryId) => {
+    toast({
+      title: "Subcategory handler invoked.",
+      description: `Category ID: ${categoryId}`,
+      status: "info",
+      duration: 3000,
+      isClosable: true,
+    });
+  };
+
+   
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const { name, description, image ,address} = formData;
+
+    if (!name.trim() || !image.trim()) {
+      toast({
+        title: "Missing required fields.",
+        description: "Name and Image URL are required.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    setLoading(true);
+    const payload = {
+      name: name.trim(),
+      description: description.trim() || "No description",
+      image: image.trim(),
+      address:address.trim(),
+      isActive: true,
     };
 
-    useEffect(() => {
-        fetchCategories();
-    }, []);
+    try {
+      if (isEditMode) {
+        await axios.put(
+          `/category/updateCategory/${currentCategoryId}`,
+          payload
+        );
+        toast({ title: "Category updated successfully!", status: "success" });
+        
+        setIsEditMode(null)
+      } else {
+        await axios.post("/category/createCategory", payload);
+        toast({ title: "Category added successfully!", status: "success" });
+      }
+      setModalOpen(false); 
+      fetchCategories();
+       setFormData({ name: "", description: "", image: "", address: "" });
+     
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: err.response?.data?.message || "Server error",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const openAddModal = () => {
-        setIsEditMode(false);
-        setFormData({ name: "", description: "", image: "" });
-        setModalOpen(true);
-    };
+   
 
-    const openEditModal = (category) => {
-        setIsEditMode(true);
-        setCurrentCategoryId(category._id);
-        setFormData({ name: category.name, description: category.description, image: category.image });
-        setModalOpen(true);
-    };
-
-    const handleAddSubcategory = (categoryId) => {
-        toast({
-            title: "Subcategory handler invoked.",
-            description: `Category ID: ${categoryId}`,
-            status: "info",
-            duration: 3000,
-            isClosable: true,
-        });
-    };
+     
+ 
 
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this category?")) return;
@@ -77,51 +145,7 @@ const CategorySection = () => {
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const { name, description, image } = formData;
-
-        if (!name.trim() || !image.trim()) {
-            toast({
-                title: "Missing required fields.",
-                description: "Name and Image URL are required.",
-                status: "warning",
-                duration: 3000,
-                isClosable: true,
-            });
-            return;
-        }
-
-        setLoading(true);
-        const payload = {
-            name: name.trim(),
-            description: description.trim() || "No description",
-            image: image.trim(),
-            isActive: true,
-        };
-
-        try {
-            if (isEditMode) {
-                await axios.put(`/category/updateCategory/${currentCategoryId}`, payload);
-                toast({ title: "Category updated successfully!", status: "success" });
-            } else {
-                await axios.post("/category/createCategory", payload);
-                toast({ title: "Category added successfully!", status: "success" });
-            }
-            fetchCategories();
-            setModalOpen(false);
-        } catch (err) {
-            toast({
-                title: "Error",
-                description: err.response?.data?.message || "Server error",
-                status: "error",
-                duration: 3000,
-                isClosable: true,
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
+    
 
     const filteredCategories = categories.filter((cat) =>
         cat.name.toLowerCase().includes(search.toLowerCase())
@@ -256,7 +280,8 @@ const CategorySection = () => {
                 </div>
             )}
         </div>
-    );
-};
+      )}
+
+    
 
 export default CategorySection;
