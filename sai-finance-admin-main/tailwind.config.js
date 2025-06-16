@@ -22,7 +22,7 @@ module.exports = {
         // ✅ Primary-Secondary Scheme
         primary: {
           DEFAULT: "#fd3a55",      // main
-          light: "#ff6f7d",        // lighter version
+          light: "emerald-400",        // lighter version
           dark: "#c2002f",         // darker version
         },
         secondary: {

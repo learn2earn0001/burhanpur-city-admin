@@ -209,15 +209,13 @@ const SubcategoryPage = () => {
       {
         Header: "Image",
         accessor: "image",
-        Cell: ({ value }) => (
-          <Cell>
-            <img
-              src={value}
-              alt="sub"
-              className="w-16 h-16 rounded object-cover"
-            />
-          </Cell>
-        ),
+        Cell: ({ value }) =>(
+      <img
+        src={value?.trim() ? value : "https://via.placeholder.com/64"}
+        alt="img"
+        className="w-16 h-16 object-cover rounded"
+      />
+    ),
       },
       {
         Header: "Name",

@@ -206,7 +206,7 @@ function UserManagement() {
                 <InputLeftElement pointerEvents="none" />
                 <Input placeholder="Search..." border="1px solid #949494" />
                 <InputRightAddon border="none">
-                  <Button className="bg-purple" size="sm">
+                  <Button className="bg-emerald-400" size="sm">
                     Search
                   </Button>
                 </InputRightAddon>

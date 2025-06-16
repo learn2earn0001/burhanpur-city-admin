@@ -27,6 +27,8 @@ import CreateOfficer from "../../OfficerData/CreateOfficer";
 import AddDailyCollection from "../../LoanAccounts/AddDailyCollection";
 import Carousel from "../../OfficerData/Corouasol";
 import CategorySection from "../../Categorypart/CategorySection";
+// import Buisness from "../../buisnesspart/buisness";
+import BusinessMain from "../../buisnesspart/BusinessMain";
 
 const DashRoute = () => {
   const token = localStorage.getItem("token");
@@ -67,6 +69,7 @@ const DashRoute = () => {
           <Route path='/create-officer' element={<CreateOfficer />} />
           <Route path='/add-daily-collection/:id' element={<AddDailyCollection />} />
           <Route path='/category' element={<CategorySection/>} />
+          <Route path="/buisness" element={<BusinessMain/>} />
 
           {/* Course Routes */}
           {/* <Route path='/view-course' element={<ViewCourse />} />
