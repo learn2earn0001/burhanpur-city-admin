@@ -136,7 +136,7 @@ const CategorySection = () => {
             <div className="flex justify-between items-center mt-10 flex-wrap gap-3">
                 <div className="flex gap-2 items-center">
                     <Button className="bg-purple-500">
-                     Total Categories: {categories.length}
+                        Total Categories: {categories.length}
                     </Button>
                     <Button onClick={openAddModal} colorScheme="blue" leftIcon={<FaPlus />}>
                         Add New Category
