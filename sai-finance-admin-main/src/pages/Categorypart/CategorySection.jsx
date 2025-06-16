@@ -103,7 +103,7 @@ const CategorySection = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { name, description, image } = formData;
+    const { name, description, image ,address} = formData;
 
     if (!name.trim() || !image.trim()) {
       toast({
@@ -121,6 +121,7 @@ const CategorySection = () => {
       name: name.trim(),
       description: description.trim() || "No description",
       image: image.trim(),
+      address:address.trim(),
       isActive: true,
     };
 
@@ -131,12 +132,16 @@ const CategorySection = () => {
           payload
         );
         toast({ title: "Category updated successfully!", status: "success" });
+        
+        setIsEditMode(null)
       } else {
         await axios.post("/category/createCategory", payload);
         toast({ title: "Category added successfully!", status: "success" });
       }
+      setModalOpen(false); 
       fetchCategories();
-      setModalOpen(false);
+       setFormData({ name: "", description: "", image: "", address: "" });
+     
     } catch (err) {
       toast({
         title: "Error",
@@ -322,7 +327,7 @@ const CategorySection = () => {
           </motion.div>
         </div>
       )}
-      
+
     </div>
   );
 };
