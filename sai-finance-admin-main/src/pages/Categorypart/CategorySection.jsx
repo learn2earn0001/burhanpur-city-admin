@@ -159,7 +159,7 @@ const CategorySection = () => {
         <div className="p-6 max-w-7xl mx-auto">
             <div className="flex justify-between items-center mt-10 flex-wrap gap-3">
                 <div className="flex gap-2 items-center">
-                    <Button className="bg-purple-500">
+                    <Button  colorScheme="purple">
                         Total Categories: {categories.length}
                     </Button>
                     <Button onClick={openAddModal} colorScheme="blue" leftIcon={<FaPlus />}>
@@ -200,9 +200,10 @@ const CategorySection = () => {
                             <h2 className="text-lg font-semibold">{cat.name}</h2> {/* text-xl -> text-lg */}
                             <p className="text-gray-600 text-sm mb-2">{cat.description}</p> {/* mb-3 -> mb-2 */}
                             <Menu>
-                                <MenuButton as={Button} size="sm" colorScheme="gray">
+                                <MenuButton as={Button} size="sm" colorScheme="purple">
                                     Actions
                                 </MenuButton>
+                                
                                 <MenuList>
                                     <MenuItem icon={<MdEdit />} onClick={() => openEditModal(cat)}>
                                         Edit
@@ -215,6 +216,7 @@ const CategorySection = () => {
                                     </MenuItem>
                                 </MenuList>
                             </Menu>
+                            
                         </div>
                     </div>
                 ))}

@@ -27,6 +27,7 @@ const Mainroute = () => {
           <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
             <Riple color="#FF782D" size="medium" text="" textColor="" />
           </div>
+          
         )}
     <Routes>
 

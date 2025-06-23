@@ -29,7 +29,8 @@ import Carousel from "../../OfficerData/Corouasol";
 import CategorySection from "../../Categorypart/CategorySection";
 // import Buisness from "../../buisnesspart/buisness";
 import BusinessMain from "../../buisnesspart/BusinessMain";
-
+ import Plans from "../../plans/Plans";
+// import CreateLoanUser from "../../LoanAccounts/CreateLoanUser";
 const DashRoute = () => {
   const token = localStorage.getItem("token");
 
@@ -60,8 +61,8 @@ const DashRoute = () => {
           <Route path='/home' element={<DashHome />} />
           <Route path='/c' element={<Carousel />} />
        
-          <Route path='/loan-account' element={<LoanAccount />} />
-          <Route path='/create-loan-account' element={<CreateLoanUser />} />
+          <Route path='/user-Account' element={<LoanAccount />} />
+          <Route path='/create-user' element={<CreateLoanUser/>} />
           <Route path='/view-user-details/:id' element={<ViewLoanUser />} />
           <Route path='/demo-user' element={<DemoUser />} />
           <Route path='/active-user' element={<ActiveUser />} />
@@ -70,6 +71,9 @@ const DashRoute = () => {
           <Route path='/add-daily-collection/:id' element={<AddDailyCollection />} />
           <Route path='/category' element={<CategorySection/>} />
           <Route path="/buisness" element={<BusinessMain/>} />
+          <Route path="/plains" element={<Plans/>}/>
+          {/* <Route path="/create- " element={<CreateLoanUser/>} /> */}
+
 
           {/* Course Routes */}
           {/* <Route path='/view-course' element={<ViewCourse />} />
