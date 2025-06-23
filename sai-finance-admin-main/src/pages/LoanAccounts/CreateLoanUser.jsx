@@ -18,7 +18,7 @@
 
 //   const initialFormState = {
 //     // user_name: "",
- 
+
 //     full_name: "",
 //     phone_number: "",
 //     monthly_income: "",
@@ -38,7 +38,7 @@
 //       total_interest_pay: 0,
 //       total_penalty_amount: 0,
 //       total_due_amount: 0,
-      
+
 //     },
 //   };
 
@@ -93,7 +93,7 @@
 //           (loan_amount * interest_rate * duration_months) / 100;
 //         const total_amount = loan_amount + total_interest_pay;
 //         const emi_day = total_amount / (duration_months * 30);
-       
+
 //         updatedloan_details = {
 //           ...updatedloan_details,
 //           principle_amount,
@@ -101,7 +101,7 @@
 //           total_amount: total_amount.toFixed(2),
 //           emi_day: Math.ceil(emi_day),
 //           file_charge:file_charge ,
-     
+
 //         };
 //       }
 //       return {
@@ -184,7 +184,7 @@
 //         </div>
 //         <br />
 //   <hr />
-        
+
 
 //         <h4 className="text-lg font-bold mt-6">Personal Details</h4>
 //         <div className=" grid grid-cols-3 gap-4 text-start">
@@ -361,7 +361,7 @@ const CreateLoanUser = ({ isOpen, onClose }) => {
         duration: 4000,
         isClosable: true,
         position: "top",
-      });
+      })
 
       // reset & close
       setFormData({

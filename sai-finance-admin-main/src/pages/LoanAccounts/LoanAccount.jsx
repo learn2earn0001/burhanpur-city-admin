@@ -2,7 +2,6 @@ import React, { useEffect, useState, useMemo, useRef } from "react";
 import dayjs from "dayjs";
 import { Link } from "react-router-dom";
 import axios from "../../axios";
-
 import Table from "../../componant/Table/Table";
 import Cell from "../../componant/Table/cell";
 import {
@@ -18,7 +17,6 @@ import {
   useDisclosure,
   Drawer,
   DrawerBody,
-  DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
   DrawerContent,
@@ -31,248 +29,164 @@ import {
   AlertDialogFooter,
   useToast,
 } from "@chakra-ui/react";
-
 import { MdEdit, MdDelete } from "react-icons/md";
 import { HiStatusOnline } from "react-icons/hi";
-
-// 🆕 import the modal component
-import CreateLoanUser from "./CreateLoanUser"; // ⬅️ adjust the path if needed
+import CreateLoanUser from "./CreateLoanUser";
+import RegisterBusinessForm from "../buisnesspart/buisnessComponents/RegisterBusinessForm";
 
 function UserManagement() {
   const [data, setData] = useState([]);
-  const [selectedUserID, setSelectedUserID] = useState(null);
-
+  const [userBusinesses, setUserBusinesses] = useState({});
+  const [selectedUserIdForBusiness, setSelectedUserIdForBusiness] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [isBusinessFormOpen, setIsBusinessFormOpen] = useState(false);
   const toast = useToast();
 
-  // delete‐user confirmation dialog
-  const {
-    isOpen: isAlertOpen,
-    onOpen: openAlert,
-    onClose: closeAlert,
-  } = useDisclosure();
-
-  // side drawer for filters
-  const {
-    isOpen: isDrawerOpen,
-    onOpen: openDrawer,
-    onClose: closeDrawer,
-  } = useDisclosure();
-
-  // modal for creating a user
-  const {
-    isOpen: isCreateOpen,
-    onOpen: openCreate,
-    onClose: closeCreate,
-  } = useDisclosure();
-
+  const { isOpen: isAlertOpen, onOpen: openAlert, onClose: closeAlert } = useDisclosure();
+  const { isOpen: isCreateOpen, onOpen: openCreate, onClose: closeCreate } = useDisclosure();
   const cancelRef = useRef();
-  const btnRef = useRef();
 
-  // 🚀 fetch users once on mount
+  // 📥 Load users + fetch each user's business data
   useEffect(() => {
     (async () => {
       try {
         const { data: res } = await axios.get("/Users/userDetails");
-        if (res?.result) setData(res.result);
+        if (res?.result) {
+          setData(res.result);
+          const resultMap = {};
+          await Promise.all(res.result.map(async (u) => {
+            const { data: bizRes } = await axios.get(`/bussiness/getMyBuss?owner=${u._id}`);
+            resultMap[u._id] = bizRes.data.result || [];
+          }));
+          setUserBusinesses(resultMap);
+        }
       } catch (err) {
-        console.error("Error fetching user data", err);
+        console.error(err);
       }
     })();
+    axios.get("/category/getCategory").then(({ data }) => setCategories(data.data || []));
   }, []);
 
-  // 🔥 remove user handler
-  const handleDelete = async () => {
+  const handleDelete = async (id) => {
     try {
-      await axios.delete(`/Users/userDetails/${selectedUserID}`);
-      toast({
-        title: "User deleted successfully.",
-        status: "success",
-        duration: 4000,
-        isClosable: true,
-        position: "top",
-      });
-      closeAlert();
-      setData((prev) => prev.filter((u) => u._id !== selectedUserID));
+      await axios.delete(`/Users/userDetails/${id}`);
+      toast({ title: "Deleted", status: "success", duration: 3000, isClosable: true });
+      setData(d => d.filter(u => u._id !== id));
     } catch (err) {
-      toast({
-        title: "Something went wrong!",
-        status: "error",
-        duration: 4000,
-        isClosable: true,
-        position: "top",
-      });
+      toast({ title: "Error", status: "error", duration: 3000, isClosable: true });
     }
+    closeAlert();
   };
 
-  // 📊 table column definitions (memoized)
-  const columns = useMemo(
-    () => [
-      {
-        Header: "Sr No.",
-        accessor: "srNo",
-        Cell: ({ row: { index } }) => <Cell text={index + 1} />,
-      },
-      {
-        Header: "Name",
-        accessor: "name",
-        Cell: ({ value }) => <Cell text={value} bold="bold" />,
-      },
-      {
-        Header: "Email",
-        accessor: "email",
-        Cell: ({ value }) => <Cell text={value} bold="bold" />,
-      },
-      {
-        Header: "Phone",
-        accessor: "phone",
-        Cell: ({ value }) => <Cell text={value} />,
-      },
-      {
-        Header: "Address",
-        accessor: "address",
-        Cell: ({ value }) => <Cell text={value} />,
-      },
-      {
-        Header: "Role",
-        accessor: "role",
-        Cell: ({ value }) => <Cell text={value} />,
-      },
-      {
-        Header: "Status",
-        accessor: "isActive",
-        Cell: ({ value }) => <Cell text={value ? "Active" : "Inactive"} />,
-      },
-      {
-        Header: "Registered On",
-        accessor: "createdAt",
-        Cell: ({ value }) => (
-          <Cell text={dayjs(value).format("D MMM, YYYY h:mm A")} />
-        ),
-      },
-      {
-        Header: "Action",
-        Cell: ({ row: { original } }) => (
+  const columns = useMemo(() => [
+    { Header: "#", Cell: ({ row: { index } }) => <Cell text={index + 1} /> },
+    { Header: "Name", accessor: "name", Cell: ({ value }) => <Cell text={value} bold /> },
+    { Header: "Email", accessor: "email", Cell: ({ value }) => <Cell text={value} bold /> },
+    { Header: "Phone", accessor: "phone", Cell: ({ value }) => <Cell text={value} /> },
+    { Header: "Role", accessor: "role", Cell: ({ value }) => <Cell text={value} /> },
+    {
+      Header: "Registered",
+      accessor: "createdAt",
+      Cell: ({ value }) => <Cell text={dayjs(value).format("D MMM, YYYY h:mm A")} />,
+    },
+    {
+      Header: "Action",
+      Cell: ({ row: { original } }) => {
+        const hasBiz = userBusinesses[original._id]?.length > 0;
+        return (
           <Menu>
-            <MenuButton
-              as={Button}
-              onClick={() => setSelectedUserID(original._id)}
-            >
-              Actions
-            </MenuButton>
+            <MenuButton as={Button} colorScheme="purple">Actions</MenuButton>
             <MenuList>
-              <Link to={`/dash/view-user-details/${original._id}`}>
-                <MenuItem>
-                  <HiStatusOnline className="mr-4" /> View Details
-                </MenuItem>
-              </Link>
-              <Link to={`/dash/edit-user/${original._id}`}>
-                <MenuItem>
-                  <MdEdit className="mr-4" /> Edit
-                </MenuItem>
-              </Link>
-              <MenuItem onClick={openAlert}>
-                <MdDelete className="mr-4" /> Delete
+              <MenuItem
+                onClick={() => {
+                  setSelectedUserIdForBusiness(original._id);
+                  setIsBusinessFormOpen(true);
+                }}
+              >
+                <HiStatusOnline /> {hasBiz ? "View Business" : "Add Business"}
               </MenuItem>
+              <Link to={`/dash/edit-user/${original._id}`}>
+                <MenuItem><MdEdit /> Edit</MenuItem>
+              </Link>
+              <MenuItem onClick={openAlert}><MdDelete /> Delete</MenuItem>
             </MenuList>
           </Menu>
-        ),
+        );
       },
-    ],
-    []
-  );
+    },
+  ], [userBusinesses]);
 
   return (
-    <div className="py-8 bg-bgWhite">
-      {/* ========================= HEADER & SEARCH ========================= */}
-      <section className="md:p-1">
-        <div className="py-6">
-          <div className="flex justify-between items-center">
-            <div className="flex gap-2">
-              <Button onClick={openDrawer} ref={btnRef} className="bg-purple">
-                Total Users: {data.length}
-              </Button>
-              {/* 🆕 open create-user modal */}
-              <Button
-                // className="bg-purple"
-                colorScheme="purple"
-                onClick={openCreate}
-              >
-                Add New User
-              </Button>
-            </div>
-            {/* 🔍 search bar (not wired) */}
-            <div className="w-96">
-              <InputGroup size="sm">
-                <InputLeftElement pointerEvents="none" />
-                <Input placeholder="Search..." border="1px solid #949494" />
-                <InputRightAddon border="none">
-                  <Button className="bg-emerald-400" size="sm">
-                    Search
-                  </Button>
-                </InputRightAddon>
-              </InputGroup>
-            </div>
-          </div>
+    <div className="py-8">
+      <div className="flex justify-between mb-4">
+        <Button colorScheme="purple" onClick={openCreate}>Add New User</Button>
+        <InputGroup w="300px">
+          <Input placeholder="Search..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+          <InputRightAddon>
+            <Button colorScheme="green">Search</Button>
+          </InputRightAddon>
+        </InputGroup>
+      </div>
 
-          {/* ========================= DATA TABLE ========================= */}
-          <div className="mt-4">
-            <Table data={data} columns={columns} />
-          </div>
-        </div>
-      </section>
+      <Table
+        data={data.filter(u =>
+          [u.name, u.email, u.phone].some(f => f?.toLowerCase().includes(searchTerm.toLowerCase()))
+        )}
+        columns={columns}
+      />
 
-      {/* ========================= FILTER DRAWER ========================= */}
-      <Drawer
-        isOpen={isDrawerOpen}
-        placement="right"
-        onClose={closeDrawer}
-        finalFocusRef={btnRef}
-      >
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader>User Filter/Info</DrawerHeader>
-          <DrawerBody>
-            <Input placeholder="Type here..." />
-          </DrawerBody>
-          <DrawerFooter>
-            <Button variant="outline" mr={3} onClick={closeDrawer}>
-              Cancel
-            </Button>
-            <Button colorScheme="blue">Save</Button>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
-
-      {/* ========================= DELETE ALERT ========================= */}
-      <AlertDialog
-        isOpen={isAlertOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={closeAlert}
-        isCentered
-      >
+      <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={closeAlert} isCentered>
         <AlertDialogOverlay>
           <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete User
-            </AlertDialogHeader>
-            <AlertDialogBody>
-              Are you sure you want to delete this user?
-            </AlertDialogBody>
+            <AlertDialogHeader>Delete User?</AlertDialogHeader>
+            <AlertDialogBody>Are you sure?</AlertDialogBody>
             <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={closeAlert}>
-                Cancel
-              </Button>
-              <Button colorScheme="red" onClick={handleDelete} ml={3}>
-                Delete
-              </Button>
+              <Button ref={cancelRef} onClick={closeAlert}>Cancel</Button>
+              <Button colorScheme="red" onClick={() => handleDelete(selectedUserIdForBusiness)}>Delete</Button>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
 
-      {/* ========================= CREATE USER MODAL ========================= */}
       <CreateLoanUser isOpen={isCreateOpen} onClose={closeCreate} />
+
+      <Drawer isOpen={isBusinessFormOpen} placement="right" onClose={() => setIsBusinessFormOpen(false)} size="md">
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader>
+            {userBusinesses[selectedUserIdForBusiness]?.length > 0 ? "Business Info" : "Add Business"}
+          </DrawerHeader>
+          <DrawerBody>
+            {userBusinesses[selectedUserIdForBusiness]?.length > 0 ? (
+              userBusinesses[selectedUserIdForBusiness].map(biz => (
+                <div key={biz._id} className="mb-4">
+                  <p><strong>Name:</strong> {biz.name}</p>
+                  <p><strong>Category:</strong> {biz.category}</p>
+                  <p><strong>Address:</strong> {biz.location}</p>
+                </div>
+              ))
+            ) : (
+              <RegisterBusinessForm
+                categories={categories}
+                onSubmit={businessData => {
+                  const payload = { ...businessData, owner: selectedUserIdForBusiness };
+                  return axios.post("/bussiness/registerBuss", payload).then(() => {
+                    toast({ title: "Registered", status: "success", duration: 3000 });
+                    setIsBusinessFormOpen(false);
+                    // update business list in memory
+                    setUserBusinesses(prev => ({
+                      ...prev,
+                      [selectedUserIdForBusiness]: [payload]
+                    }));
+                  });
+                }}
+              />
+            )}
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }

@@ -26,6 +26,7 @@
     "i18next-browser-languagedetector": "^6.1.1",
     "i18next-http-backend": "^1.2.6",
     "jspdf": "^2.5.1",
+    "lucide-react": "^0.518.0",
     "react": "^18.2.0",
     "react-animate-on-scroll": "^2.1.9",
     "react-apexcharts": "^1.7.0",

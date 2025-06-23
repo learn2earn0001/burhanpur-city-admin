@@ -50,7 +50,7 @@ const NewNavbar = () => {
           </Link>
         </li>
         <li>
-          <Link to="/dash/loan-account" className="hover:text-purple">
+          <Link to="/dash/user-Account" className="hover:text-purple">
           User Details    
           </Link>
         </li>
@@ -62,27 +62,20 @@ const NewNavbar = () => {
         <li>
           <Link to="/dash/buisness" className="hover:text-purple">
           Buisness
+          
+          </Link>
+        </li>
+        <li>
+          <Link to="/dash/plains" className="hover:text-purple">
+          Pricing
+          
           </Link>
         </li>
 
         
 
         {/* Payment Controls */}
-        <li className="relative z-100">
-          <button onClick={() => toggleDropdown("payment")} className="hover:text-purple flex items-center">
-            Payment Controls <MdKeyboardArrowDown size={20} />
-          </button>
-          {openDropdown === "payment" && (
-            <ul className="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-lg">
-              <Link to="/dash/payment" onClick={closeDropdown}>
-                <li className="p-2 hover:bg-gray-100">Payment</li>
-              </Link>
-              <Link to="/dash/payment-request" onClick={closeDropdown}>
-                <li className="p-2 hover:bg-gray-100">Payment Request</li>
-              </Link>
-            </ul>
-          )}
-        </li>
+         
       </ul>
 
       {/* Avatar & Logout */}
