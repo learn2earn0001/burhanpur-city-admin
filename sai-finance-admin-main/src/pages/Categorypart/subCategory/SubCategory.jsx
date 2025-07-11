@@ -211,11 +211,11 @@ const SubcategoryPage = () => {
         accessor: "description",
         Cell: ({ value }) => <Cell text={value} />,
       },
-      {
-        Header: "Address",
-        accessor: "address",
-        Cell: ({ value }) => <Cell text={value} />,
-      },
+      // {
+      //   Header: "Address",
+      //   accessor: "address",
+      //   Cell: ({ value }) => <Cell text={value} />,
+      // },
       {
         Header: "Actions",
         Cell: ({ row: { original } }) => (
